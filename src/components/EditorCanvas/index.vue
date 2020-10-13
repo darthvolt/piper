@@ -3,7 +3,7 @@
     @mousedown="canvasIsDruggble = true"
     @mouseup="canvasIsDruggble = false"
     @mouseleave="canvasIsDruggble = false"
-    @mousemove="drugCanvas"
+    @mousemove="mouseMoveHandler"
     @wheel="changeScale"
     ref="canvas"
     :width="canvasWidth"
@@ -15,11 +15,11 @@
       :canvasHeight="canvasHeight"
     )
 
-    //- circle(
-    //-   cx="1500"
-    //-   cy="1000"
-    //-   r="50px"
-    //- )
+    circle(
+      :cx="canvasWidth /2"
+      :cy="canvasHeight /2"
+      r="50px"
+    )
 
 
 </template>
@@ -33,16 +33,21 @@ export default {
   },
 
   mounted() {
+    this.viewboxWidth = this.screenWidth;
+    this.viewboxHeight = this.screenHeight;
+    this.cursorPoint = this.$refs.canvas.createSVGPoint();
     this.viewboxMinX = (this.canvasWidth / 2) - (this.viewboxWidth / 2);
     this.viewboxMinY = (this.canvasHeight / 2) - (this.viewboxHeight / 2);
   }, 
 
   data() {
     return {
-      canvasWidth: 3000,
-      canvasHeight: 2000,
-      viewboxWidth: 1500,
-      viewboxHeight: 500,
+      cursorPoint: null,
+      cursorCoords: null,
+      canvasWidth: 5000,
+      canvasHeight: 5000,
+      viewboxWidth: 0,
+      viewboxHeight: 0,
       viewboxMinX: 0,
       viewboxMinY: 0,
       canvasIsDruggble: false,
@@ -74,12 +79,23 @@ export default {
       }
     },
 
-    drugCanvas(event) {
+    mouseMoveHandler(event) {
+      this.calcCursorCoords(event);
+      this.dragCanvas();
+    },
+
+    dragCanvas() {
       const step = 3;
       if (this.canvasIsDruggble) {
         this.viewboxMinX -= event.movementX * step;
         this.viewboxMinY -= event.movementY * step;
       }
+    },
+
+    calcCursorCoords(event){
+      this.cursorPoint.x = event.clientX; 
+      this.cursorPoint.y = event.clientY;
+      this.cursorCoords = this.cursorPoint.matrixTransform(this.$refs.canvas.getScreenCTM().inverse());
     }
   }
 }

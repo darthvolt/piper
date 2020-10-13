@@ -19,7 +19,7 @@
   .canvas
     border 1px solid black
     border-radius 5px
-    width 2100px
-    height 700px
+    width 90vw
+    height 90vh
     margin 0 auto
 </style>
