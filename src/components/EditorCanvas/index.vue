@@ -13,6 +13,7 @@
     grid(
       :canvasWidth="canvasWidth"
       :canvasHeight="canvasHeight"
+      :cursorCoords="cursorCoords"
     )
 
     circle(
@@ -43,7 +44,7 @@ export default {
   data() {
     return {
       cursorPoint: null,
-      cursorCoords: null,
+      cursorCoords: {x: 0, y: 0},
       canvasWidth: 5000,
       canvasHeight: 5000,
       viewboxWidth: 0,
@@ -95,7 +96,8 @@ export default {
     calcCursorCoords(event){
       this.cursorPoint.x = event.clientX; 
       this.cursorPoint.y = event.clientY;
-      this.cursorCoords = this.cursorPoint.matrixTransform(this.$refs.canvas.getScreenCTM().inverse());
+      const point = this.cursorPoint.matrixTransform(this.$refs.canvas.getScreenCTM().inverse());
+      this.cursorCoords = {x: point.x, y: point.y}
     }
   }
 }
