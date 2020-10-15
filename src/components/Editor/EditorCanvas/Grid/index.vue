@@ -37,12 +37,6 @@
         stroke="#000"
         stroke-width="0.5"
       )
-      circle(
-        :cx="cursorNearestGridPointCoords.x"
-        :cy="cursorNearestGridPointCoords.y"
-        r="2"
-        fill="#000" 
-      )
 </template>
 
 <script>

@@ -14,7 +14,7 @@ export default {
     setCursorCanvasCoords({cursorCanvasCoords}, coords) {
       cursorCanvasCoords.x = coords.x;
       cursorCanvasCoords.y = coords.y;
-    }
+    },
   },
   actions: {
   },

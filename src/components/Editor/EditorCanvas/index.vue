@@ -1,11 +1,11 @@
 <template lang="pug">
   svg.canvas(
-    @mousedown="canvasIsDruggble = true"
-    @mouseup="canvasIsDruggble = false"
+    @mousedown="mousedownHandler"
+    @mouseup="mouseupHandler"
     @mouseleave="canvasIsDruggble = false"
-    @mousemove="mouseMoveHandler"
     @wheel="changeScale"
     @click="clickHandler"
+    @mousemove="mousemoveHandler"
     ref="canvas"
     :width="canvasWidth"
     :height="canvasHeight"
@@ -20,8 +20,6 @@
       :currentTool="currentTool"
       ref="lineTool"
     )
-
-
 </template>
 
 <script>
@@ -88,13 +86,22 @@ export default {
       }
     },
 
-    mouseMoveHandler(event) {
-      this.calcCursorCoords(event);
-      this.dragCanvas();
+    mousedownHandler(event) {
+      if (event.button === 1) this.canvasIsDruggble = true;
+    },
+
+    mouseupHandler() {
+      if (event.button === 1) this.canvasIsDruggble = false;
     },
 
     clickHandler(event) {
-      this.$refs[this.currentTool].clickHandler(event, this.cursorNearestGridPointCoords)
+      this.$refs[this.currentTool].editorClickHandler(event)
+    },
+
+    mousemoveHandler(event) {
+      this.calcCursorCoords(event);
+      this.dragCanvas();
+      this.$refs[this.currentTool].editorMousemoveHandler(event)
     },
 
     dragCanvas() {
