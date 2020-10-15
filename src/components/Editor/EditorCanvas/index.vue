@@ -5,6 +5,7 @@
     @mouseleave="canvasIsDruggble = false"
     @mousemove="mouseMoveHandler"
     @wheel="changeScale"
+    @click="clickHandler"
     ref="canvas"
     :width="canvasWidth"
     :height="canvasHeight"
@@ -13,24 +14,28 @@
     grid(
       :canvasWidth="canvasWidth"
       :canvasHeight="canvasHeight"
-      :cursorCoords="cursorCoords"
     )
 
-    circle(
-      :cx="canvasWidth /2"
-      :cy="canvasHeight /2"
-      r="50px"
+    line-tool(
+      :currentTool="currentTool"
+      ref="lineTool"
     )
 
 
 </template>
 
 <script>
-import grid from '@/components/EditorCanvas/Grid'
+import grid from '@/components/Editor/EditorCanvas/Grid'
+import lineTool from '@/components/Editor/EditorCanvas/tools/Line'
 
 export default {
   components: {
-    grid
+    grid,
+    lineTool
+  },
+
+  props: {
+    currentTool: {type: String, default: 'lineTool'},
   },
 
   mounted() {
@@ -52,7 +57,6 @@ export default {
       viewboxMinX: 0,
       viewboxMinY: 0,
       canvasIsDruggble: false,
-      currentTool: 'line',
     }
   },
 
@@ -65,6 +69,10 @@ export default {
     },
     screenHeight() {
       return document.documentElement.clientHeight;
+    },
+
+    cursorNearestGridPointCoords() {
+      return this.$store.state.editor.cursorNearestGridPointCoords;
     }
   },
 
@@ -85,6 +93,10 @@ export default {
       this.dragCanvas();
     },
 
+    clickHandler(event) {
+      this.$refs[this.currentTool].clickHandler(event, this.cursorNearestGridPointCoords)
+    },
+
     dragCanvas() {
       const step = 3;
       if (this.canvasIsDruggble) {
@@ -97,7 +109,7 @@ export default {
       this.cursorPoint.x = event.clientX; 
       this.cursorPoint.y = event.clientY;
       const point = this.cursorPoint.matrixTransform(this.$refs.canvas.getScreenCTM().inverse());
-      this.cursorCoords = {x: point.x, y: point.y}
+      this.$store.commit('editor/setCursorCanvasCoords', {x: point.x, y: point.y})
     }
   }
 }

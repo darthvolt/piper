@@ -1,7 +1,5 @@
 <template lang="pug">
-  g.grid(
-    @mousemove="mousemoveHandler"
-  )
+  g.grid
     line(
       stroke-width="1"
       :stroke="gridColor"
@@ -24,25 +22,25 @@
 
     g(v-if="showPointer")
       line(
-        :x1="cursorNearestPointCoords.x - gridStep"
-        :y1="cursorNearestPointCoords.y"
-        :x2="cursorNearestPointCoords.x + gridStep"
-        :y2="cursorNearestPointCoords.y"
+        :x1="cursorNearestGridPointCoords.x - gridStep"
+        :y1="cursorNearestGridPointCoords.y"
+        :x2="cursorNearestGridPointCoords.x + gridStep"
+        :y2="cursorNearestGridPointCoords.y"
         stroke="#000"
-        stroke-width="0.7"
+        stroke-width="0.5"
       )
       line(
-        :x1="cursorNearestPointCoords.x"
-        :y1="cursorNearestPointCoords.y - gridStep"
-        :x2="cursorNearestPointCoords.x"
-        :y2="cursorNearestPointCoords.y + gridStep"
+        :x1="cursorNearestGridPointCoords.x"
+        :y1="cursorNearestGridPointCoords.y - gridStep"
+        :x2="cursorNearestGridPointCoords.x"
+        :y2="cursorNearestGridPointCoords.y + gridStep"
         stroke="#000"
-        stroke-width="0.7"
+        stroke-width="0.5"
       )
       circle(
-        :cx="cursorNearestPointCoords.x"
-        :cy="cursorNearestPointCoords.y"
-        r="3"
+        :cx="cursorNearestGridPointCoords.x"
+        :cy="cursorNearestGridPointCoords.y"
+        r="2"
         fill="#000" 
       )
 </template>
@@ -54,15 +52,18 @@
       canvasHeight: {type: Number, default: 0},
       gridStep: {type: Number, default: 20},
       gridColor: {type: String, default: '#f3f3f3'},
-      cursorCoords: {type: Object, required: true},
       showPointer: {type: Boolean, default: true}
     }, 
 
     computed: {
-      cursorNearestPointCoords() {
+      cursorCanvasCoords() {
+        return this.$store.state.editor.cursorCanvasCoords;
+      },
+
+      cursorNearestGridPointCoords() {
         return {
-          x: Math.round(this.cursorCoords.x / this.gridStep) * this.gridStep, 
-          y: Math.round(this.cursorCoords.y / this.gridStep) * this.gridStep, 
+          x: Math.round(this.cursorCanvasCoords.x / this.gridStep) * this.gridStep, 
+          y: Math.round(this.cursorCanvasCoords.y / this.gridStep) * this.gridStep, 
         }
       },
 
@@ -83,10 +84,10 @@
       },
     },
 
-    methods: {
-      mousemoveHandler() {
-        this.$emit('cursorNearestPointCalculated', this.cursorNearestPointCoords);
+    watch: {
+      cursorNearestGridPointCoords() {
+        this.$store.commit('editor/setCursorNearestGridPointCoords', this.cursorNearestGridPointCoords);
       }
-    }
+    },
   }
 </script>
